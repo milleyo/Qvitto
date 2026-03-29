@@ -18,9 +18,13 @@ export async function POST(req) {
 
     await sendReceiptEmail({
       to: email,
-      receiptId,
+      receiptId: receipt.id,
       storeName: receipt.store_name,
+      storeOrgnr: receipt.store_orgnr,
+      storeAddress: receipt.store_address,
       total: receipt.total,
+      vat: receipt.vat,
+      items: receipt.items || [],
       date: receipt.date,
     })
 

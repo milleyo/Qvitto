@@ -1,88 +1,74 @@
-'use client'
-import { useState } from 'react'
+import Link from 'next/link'
 
-export default function ScanPage() {
-  const [token, setToken] = useState('')
-  const [result, setResult] = useState(null)
-  const [loading, setLoading] = useState(false)
-
-  const handleVerify = async () => {
-    if (!token.trim()) return
-    setLoading(true)
-    const res = await fetch(`/api/sessions?token=${token.trim()}`)
-    const data = await res.json()
-    setResult(data)
-    setLoading(false)
-  }
-
-  const config = {
-    verified: { color: '#10B981', icon: '✓', title: 'GODKÄND', sub: 'Retur godkänd. Markera varan som returnerad.' },
-    invalid: { color: '#EF4444', icon: '✗', title: 'OGILTIG', sub: 'Token hittades inte. Be kunden generera en ny.' },
-    expired: { color: '#F59E0B', icon: '!', title: 'UTGÅNGEN', sub: 'Token gick ut (>60s). Be kunden generera en ny.' },
-    already_used: { color: '#EF4444', icon: '✗', title: 'REDAN ANVÄND', sub: 'Denna retur har redan behandlats.' },
-  }
-
+export default function Home() {
   return (
-    <div style={{ maxWidth: 480, margin: '0 auto', padding: '40px 24px', fontFamily: 'sans-serif' }}>
-      <div style={{ marginBottom: 32 }}>
-        <span style={{ fontWeight: 800, fontSize: 18 }}>Qvitto</span>
-        <span style={{ marginLeft: 8, fontSize: 13, color: '#6B7280' }}>Personalvy</span>
-      </div>
+    <div style={{ minHeight: '100vh', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif', color: '#111' }}>
+      
+      {/* Nav */}
+      <nav style={{ borderBottom: '1px solid #E5E7EB', padding: '0 32px', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(8px)', zIndex: 100 }}>
+        <span style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-0.04em', color: '#111' }}>qvitto</span>
+        <Link href="/create" style={{ background: '#4ED1D1', color: '#fff', padding: '8px 20px', borderRadius: 10, textDecoration: 'none', fontWeight: 600, fontSize: 14 }}>
+          Skapa kvitto
+        </Link>
+      </nav>
 
-      <h1 style={{ fontSize: 28, fontWeight: 800, marginBottom: 6 }}>Skanna & verifiera</h1>
-      <p style={{ color: '#6B7280', fontSize: 15, marginBottom: 32 }}>Ange kundens returtoken för att godkänna retur.</p>
+      {/* Hero */}
+      <div style={{ maxWidth: 640, margin: '0 auto', padding: '100px 24px 80px', textAlign: 'center' }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#4ED1D110', color: '#2BB3B3', padding: '6px 14px', borderRadius: 20, fontSize: 13, fontWeight: 600, marginBottom: 32 }}>
+          🌿 ~5g CO₂ sparat per kvitto
+        </div>
+        <h1 style={{ fontSize: 52, fontWeight: 900, letterSpacing: '-0.04em', margin: '0 0 20px', lineHeight: 1.08, color: '#111' }}>
+          Kvitton, levererade<br />
+          <span style={{ color: '#4ED1D1' }}>direkt vid kassan.</span>
+        </h1>
+        <p style={{ fontSize: 18, color: '#6B7280', maxWidth: 420, margin: '0 auto 48px', lineHeight: 1.65 }}>
+          Det finansiella lagret efter varje betalning.<br />Billigare än papper. Noll friktion.
+        </p>
 
-      <div style={{ border: '1px solid #E5E7EB', borderRadius: 16, padding: 24, marginBottom: 20 }}>
-        <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#6B7280', marginBottom: 6, textTransform: 'uppercase' }}>Returtoken</label>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <input
-            style={{ flex: 1, padding: '11px 14px', borderRadius: 10, border: '1px solid #E5E7EB', fontSize: 15, fontFamily: 'monospace', letterSpacing: '0.05em' }}
-            placeholder="t.ex. TKAB12CD"
-            value={token}
-            onChange={e => setToken(e.target.value.toUpperCase())}
-            onKeyDown={e => e.key === 'Enter' && handleVerify()}
-          />
-          <button
-            onClick={handleVerify}
-            disabled={loading}
-            style={{ background: '#4ED1D1', color: '#fff', border: 'none', borderRadius: 10, padding: '11px 20px', fontWeight: 600, cursor: 'pointer', opacity: loading ? 0.7 : 1 }}
-          >
-            {loading ? '…' : 'Verifiera'}
-          </button>
+        <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+          <Link href="/create" style={{ background: '#111', color: '#fff', padding: '14px 28px', borderRadius: 12, textDecoration: 'none', fontWeight: 700, fontSize: 15, display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+            Skapa kvitto →
+          </Link>
+          <Link href="/scan" style={{ background: '#fff', color: '#111', padding: '14px 28px', borderRadius: 12, textDecoration: 'none', fontWeight: 600, fontSize: 15, border: '1px solid #E5E7EB' }}>
+            Skanna & verifiera
+          </Link>
         </div>
       </div>
 
-      {result && (() => {
-        const cfg = config[result.status] || config.invalid
-        return (
-          <div style={{ border: `1px solid ${cfg.color}40`, borderRadius: 16, padding: 32, textAlign: 'center', background: cfg.color + '06' }}>
-            <div style={{ width: 72, height: 72, borderRadius: '50%', background: cfg.color + '15', border: `3px solid ${cfg.color}`, margin: '0 auto 20px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32, color: cfg.color, fontWeight: 800 }}>
-              {cfg.icon}
-            </div>
-            <h2 style={{ fontSize: 24, fontWeight: 900, color: cfg.color, margin: '0 0 8px' }}>{cfg.title}</h2>
-            <p style={{ fontSize: 14, color: '#6B7280', margin: '0 0 24px' }}>{cfg.sub}</p>
-            {result.receipt && (
-              <div style={{ background: '#F5F5F5', borderRadius: 10, padding: 16, textAlign: 'left' }}>
-                {[
-                  { label: 'Butik', value: result.receipt.store_name },
-                  { label: 'Totalt', value: result.receipt.total + ' kr' },
-                  { label: 'E-post', value: result.session?.user_email },
-                  { label: 'Kvitto', value: result.receipt.id },
-                ].map(row => (
-                  <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, marginBottom: 8 }}>
-                    <span style={{ color: '#6B7280' }}>{row.label}</span>
-                    <span style={{ fontWeight: 600 }}>{row.value}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-            <button onClick={() => { setResult(null); setToken('') }}
-              style={{ background: '#fff', color: '#111', border: '1px solid #E5E7EB', borderRadius: 10, padding: '10px 20px', fontSize: 13, cursor: 'pointer', marginTop: 16 }}>
-              Verifiera ny token
-            </button>
+      {/* Features */}
+      <div style={{ maxWidth: 860, margin: '0 auto', padding: '0 24px 100px', display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 20 }}>
+        {[
+          { icon: '⚡', title: 'Instant', desc: 'QR genereras på millisekunder. Snabbare än att skriva ut.' },
+          { icon: '🔒', title: 'Anti-bedrägeri', desc: 'Säkert returflöde med engångs-QR-tokens som går ut efter 60 sekunder.' },
+          { icon: '🌿', title: '~5g CO₂ sparat', desc: 'Per kvitto. Miljöpåverkan visas direkt för kunden.' },
+          { icon: '📧', title: 'Email-fallback', desc: 'Om QR inte fungerar skickas kvittot direkt till kundens inbox.' },
+          { icon: '📋', title: 'Juridiskt korrekt', desc: 'Org.nr, moms, adress, kvittonummer — allt enligt bokföringslagen.' },
+          { icon: '🔄', title: 'Returhantering', desc: 'Kunden verifierar sig, genererar QR, personalen godkänner. Klart.' },
+        ].map(f => (
+          <div key={f.title} style={{ border: '1px solid #E5E7EB', borderRadius: 14, padding: '24px 20px', background: '#fff' }}>
+            <div style={{ fontSize: 28, marginBottom: 12 }}>{f.icon}</div>
+            <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 6, color: '#111' }}>{f.title}</div>
+            <div style={{ fontSize: 13, color: '#6B7280', lineHeight: 1.6 }}>{f.desc}</div>
           </div>
-        )
-      })()}
+        ))}
+      </div>
+
+      {/* Bottom CTA */}
+      <div style={{ borderTop: '1px solid #E5E7EB', background: '#fafafa', padding: '64px 24px', textAlign: 'center' }}>
+        <h2 style={{ fontSize: 32, fontWeight: 800, letterSpacing: '-0.03em', margin: '0 0 16px' }}>Redo att testa?</h2>
+        <p style={{ fontSize: 16, color: '#6B7280', margin: '0 0 32px' }}>Skapa ditt första digitala kvitto på under 30 sekunder.</p>
+        <Link href="/create" style={{ background: '#4ED1D1', color: '#fff', padding: '15px 32px', borderRadius: 12, textDecoration: 'none', fontWeight: 700, fontSize: 16 }}>
+          Skapa kvitto gratis →
+        </Link>
+      </div>
+
+      {/* Footer */}
+      <footer style={{ borderTop: '1px solid #E5E7EB', padding: '24px', textAlign: 'center' }}>
+        <p style={{ fontSize: 12, color: '#9CA3AF', margin: 0 }}>
+          <strong style={{ color: '#111', fontWeight: 800, letterSpacing: '-0.02em' }}>qvitto</strong> · The financial layer after every payment · Cheaper than paper.
+        </p>
+      </footer>
+
     </div>
   )
 }
